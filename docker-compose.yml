@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ims_pos
+      POSTGRES_PASSWORD: ims_pos
+      POSTGRES_DB: ims_pos
+    ports:
+      - "5432:5432"
+    volumes:
+      - ims_pos_pgdata:/var/lib/postgresql/data
+
+volumes:
+  ims_pos_pgdata:
