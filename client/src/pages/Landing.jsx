@@ -118,7 +118,10 @@ export default function Landing() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--brand-600)] to-violet-600 flex items-center justify-center text-white shadow-md">
               <PhoneMark className="w-5 h-5" />
             </div>
-            <span className="font-bold text-slate-900 tracking-tight">{businessName}</span>
+            <div className="leading-tight">
+              <span className="font-bold text-slate-900 tracking-tight block">{businessName}</span>
+              <span className="text-[10px] text-slate-400 block">Anknovate Inventory Management and POS System</span>
+            </div>
           </div>
           <Link to="/login" className="btn-primary shadow-sm hover:shadow-md transition-shadow">Sign In</Link>
         </div>

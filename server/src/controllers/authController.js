@@ -65,7 +65,10 @@ const changePassword = catchAsync(async (req, res) => {
 
   const user = await db.User.scope('withPassword').findByPk(req.user.id);
   const valid = await bcrypt.compare(currentPassword || '', user.password_hash);
-  if (!valid) throw new ApiError(401, 'Current password is incorrect');
+  // 400, not 401: the caller IS authenticated (their session token is valid) - they just got a
+  // different secret wrong within this one request. 401 would trip the client's global
+  // "session expired" handling and force-log them out instead of showing an inline error.
+  if (!valid) throw new ApiError(400, 'Current password is incorrect');
 
   user.password_hash = await bcrypt.hash(newPassword, 10);
   await user.save();

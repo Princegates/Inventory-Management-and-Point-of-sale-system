@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Modal from './Modal';
+import api, { apiErrorMessage } from '../api/client';
 
 const NAV = [
   { to: '/dashboard', label: 'Dashboard', end: true },
@@ -23,11 +26,48 @@ const NAV = [
   { to: '/settings', label: 'Business Settings', permission: 'MANAGE_SYSTEM_SETTINGS' },
 ];
 
+const emptyPasswordForm = { currentPassword: '', newPassword: '', confirmPassword: '' };
+
 export default function Layout() {
   const { user, logout, hasPermission } = useAuth();
   const navigate = useNavigate();
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState(emptyPasswordForm);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSaved, setPasswordSaved] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
 
   const items = NAV.filter((item) => !item.permission || hasPermission(...(Array.isArray(item.permission) ? item.permission : [item.permission])));
+
+  const openPasswordModal = () => {
+    setPasswordForm(emptyPasswordForm);
+    setPasswordError('');
+    setPasswordSaved(false);
+    setPasswordModalOpen(true);
+  };
+
+  const submitPasswordChange = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSaved(false);
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError('New password and confirmation do not match');
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      await api.post('/auth/change-password', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      });
+      setPasswordForm(emptyPasswordForm);
+      setPasswordSaved(true);
+    } catch (err) {
+      setPasswordError(apiErrorMessage(err));
+    } finally {
+      setSavingPassword(false);
+    }
+  };
 
   return (
     <div className="flex h-screen bg-slate-100">
@@ -60,6 +100,9 @@ export default function Layout() {
               <p className="text-sm font-medium text-slate-800">{user?.name}</p>
               <p className="text-xs text-slate-500">{user?.role?.name}</p>
             </div>
+            <button className="btn-secondary text-xs" onClick={openPasswordModal}>
+              Change Password
+            </button>
             <button
               className="btn-secondary text-xs"
               onClick={async () => { await logout(); navigate('/login'); }}
@@ -72,6 +115,30 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
+
+      <Modal open={passwordModalOpen} title="Change Password" onClose={() => setPasswordModalOpen(false)}>
+        <form onSubmit={submitPasswordChange} className="space-y-3">
+          {passwordError && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{passwordError}</div>}
+          {passwordSaved && !passwordError && <div className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md px-3 py-2">Password changed.</div>}
+          <div>
+            <label className="label">Current Password</label>
+            <input required type="password" className="input" value={passwordForm.currentPassword} onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">New Password</label>
+            <input required type="password" minLength={8} className="input" value={passwordForm.newPassword} onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })} />
+            <p className="text-xs text-slate-400 mt-1">At least 8 characters.</p>
+          </div>
+          <div>
+            <label className="label">Confirm New Password</label>
+            <input required type="password" minLength={8} className="input" value={passwordForm.confirmPassword} onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })} />
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" className="btn-secondary" onClick={() => setPasswordModalOpen(false)}>Cancel</button>
+            <button className="btn-primary" disabled={savingPassword}>{savingPassword ? 'Saving...' : 'Save'}</button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
