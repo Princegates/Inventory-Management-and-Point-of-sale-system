@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { apiErrorMessage } from '../api/client';
 
@@ -40,7 +40,10 @@ export default function Login() {
             <input type="email" required className="input" value={email} onChange={(e) => setEmail(e.target.value)} autoFocus />
           </div>
           <div>
-            <label className="label">Password</label>
+            <div className="flex items-center justify-between">
+              <label className="label">Password</label>
+              <Link to="/forgot-password" className="text-xs text-indigo-600 hover:underline mb-1">Forgot password?</Link>
+            </div>
             <input type="password" required className="input" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           <button type="submit" disabled={loading} className="btn-primary w-full">

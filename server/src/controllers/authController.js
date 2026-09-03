@@ -5,6 +5,7 @@ const db = require('../models');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { logAudit } = require('../services/auditLogger');
+const emailService = require('../services/emailService');
 
 function signToken(user) {
   return jwt.sign({ sub: user.id }, process.env.JWT_SECRET, {
@@ -71,9 +72,9 @@ const changePassword = catchAsync(async (req, res) => {
   res.json({ success: true });
 });
 
-// Generates a reset token. In production this would be emailed to the user (SRS section 61
-// lists email/SMS integrations as future work); for now it is returned to an administrator so
-// the workflow is usable end-to-end without an SMTP dependency.
+// Generates a reset token and emails it (via Resend - see services/emailService.js). If no
+// RESEND_API_KEY is configured (local development), the token is returned directly in the
+// response instead so the flow stays testable without a real email account.
 const requestPasswordReset = catchAsync(async (req, res) => {
   const { email } = req.body;
   const user = await db.User.findOne({ where: { email: (email || '').toLowerCase() } });
@@ -84,7 +85,12 @@ const requestPasswordReset = catchAsync(async (req, res) => {
   user.reset_token_expires = new Date(Date.now() + 60 * 60 * 1000);
   await user.save();
 
-  res.json({ success: true, resetToken: token, expiresAt: user.reset_token_expires });
+  await emailService.sendPasswordResetEmail(user, token);
+
+  if (!emailService.isConfigured()) {
+    return res.json({ success: true, resetToken: token, expiresAt: user.reset_token_expires, emailSent: false });
+  }
+  res.json({ success: true, emailSent: true });
 });
 
 const resetPassword = catchAsync(async (req, res) => {

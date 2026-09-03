@@ -216,6 +216,23 @@ Auditor - matching the SRS's user categories, each with a starting permission se
 sales roles) a maximum discount percentage. Roles and their permissions can be edited under
 **Users & Roles** by an administrator.
 
+## Password reset emails
+
+"Forgot password" sends a real email (via [Resend](https://resend.com)) with a link to set a new
+password:
+
+1. Sign up at resend.com and grab an API key from the dashboard.
+2. Set `RESEND_API_KEY` in `server/.env`. Resend's shared `onboarding@resend.dev` sender
+   (the default `EMAIL_FROM`) works immediately with no domain setup, but only delivers to the
+   email address you signed up to Resend with - verify your own domain in Resend and set
+   `EMAIL_FROM` to an address on it once you're ready to email real users.
+3. Set `FRONTEND_URL` to wherever the client is actually served (defaults to
+   `http://localhost:5173`) - it's used to build the link inside the email.
+
+Without `RESEND_API_KEY` set, nothing is emailed - the "Forgot password" page instead shows the
+reset link directly on screen, so the flow stays testable with no email account at all. This is
+meant for local development only; set the key before relying on this for real users.
+
 ## Scope notes
 
 This build implements the SRS's MVP feature set (section 67) plus stock counts and a
