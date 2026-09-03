@@ -104,16 +104,21 @@ export default function Transfers() {
               <button type="button" className="btn-secondary text-xs" onClick={addItem}>+ Add item</button>
             </div>
             <div className="space-y-2">
-              {form.items.map((item, idx) => (
-                <div key={idx} className="flex gap-2 items-center">
-                  <select className="input flex-1" value={item.productId} onChange={(e) => updateItem(idx, 'productId', e.target.value)}>
-                    <option value="">Select product</option>
-                    {products.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>)}
-                  </select>
-                  <input type="number" min="1" className="input w-24" value={item.quantity} onChange={(e) => updateItem(idx, 'quantity', e.target.value)} />
-                  <button type="button" className="text-red-500 text-xs" onClick={() => removeItem(idx)}>Remove</button>
-                </div>
-              ))}
+              {form.items.map((item, idx) => {
+                const chosenElsewhere = new Set(form.items.filter((_, i) => i !== idx).map((it) => it.productId).filter(Boolean));
+                return (
+                  <div key={idx} className="flex gap-2 items-center">
+                    <select className="input flex-1" value={item.productId} onChange={(e) => updateItem(idx, 'productId', e.target.value)}>
+                      <option value="">Select product</option>
+                      {products.filter((p) => String(p.id) === String(item.productId) || !chosenElsewhere.has(String(p.id))).map((p) => (
+                        <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>
+                      ))}
+                    </select>
+                    <input type="number" min="1" className="input w-24" value={item.quantity} onChange={(e) => updateItem(idx, 'quantity', e.target.value)} />
+                    <button type="button" className="text-red-500 text-xs" onClick={() => removeItem(idx)}>Remove</button>
+                  </div>
+                );
+              })}
               {form.items.length === 0 && <p className="text-xs text-slate-400">No items added yet</p>}
             </div>
           </div>
