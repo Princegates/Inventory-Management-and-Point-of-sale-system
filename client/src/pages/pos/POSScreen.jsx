@@ -117,8 +117,8 @@ export default function POSScreen({ session, onSessionClosed }) {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-4 h-[calc(100vh-6.5rem)]">
-      <div className="col-span-2 flex flex-col gap-3">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:h-[calc(100vh-6.5rem)]">
+      <div className="md:col-span-2 flex flex-col gap-3">
         <div className="card p-3">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-slate-600">
@@ -152,8 +152,8 @@ export default function POSScreen({ session, onSessionClosed }) {
           )}
         </div>
 
-        <div className="card flex-1 overflow-y-auto">
-          <table className="table-base">
+        <div className="card flex-1 overflow-auto">
+          <table className="table-base min-w-[640px]">
             <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Discount %</th><th>Total</th><th></th></tr></thead>
             <tbody className="divide-y divide-slate-100">
               {cart.map((line) => {

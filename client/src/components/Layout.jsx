@@ -31,6 +31,7 @@ const emptyPasswordForm = { currentPassword: '', newPassword: '', confirmPasswor
 export default function Layout() {
   const { user, logout, hasPermission } = useAuth();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState(emptyPasswordForm);
   const [passwordError, setPasswordError] = useState('');
@@ -71,10 +72,25 @@ export default function Layout() {
 
   return (
     <div className="flex h-screen bg-slate-100">
-      <aside className="w-60 shrink-0 bg-slate-900 text-slate-200 flex flex-col">
-        <div className="px-4 py-4 border-b border-slate-800">
-          <p className="font-semibold text-white text-sm leading-tight">Anknovate</p>
-          <p className="text-xs text-slate-400">Inventory &amp; POS System</p>
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 bg-black/40 md:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      <aside
+        className={`fixed md:static inset-y-0 left-0 z-50 w-60 shrink-0 bg-slate-900 text-slate-200 flex flex-col transform transition-transform duration-200 md:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="px-4 py-4 border-b border-slate-800 flex items-center justify-between">
+          <div>
+            <p className="font-semibold text-white text-sm leading-tight">Anknovate</p>
+            <p className="text-xs text-slate-400">Inventory &amp; POS System</p>
+          </div>
+          <button className="md:hidden text-slate-400 hover:text-white p-1" onClick={() => setSidebarOpen(false)} aria-label="Close menu">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </button>
         </div>
         <nav className="flex-1 overflow-y-auto py-2">
           {items.map((item) => (
@@ -82,6 +98,7 @@ export default function Layout() {
               key={item.to}
               to={item.to}
               end={item.end}
+              onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
                 `block px-4 py-2 text-sm rounded-md mx-2 my-0.5 ${isActive ? 'bg-[var(--brand-600)] text-white' : 'text-slate-300 hover:bg-slate-800'}`
               }
@@ -93,25 +110,31 @@ export default function Layout() {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-4 shrink-0">
-          <div />
-          <div className="flex items-center gap-3">
-            <div className="text-right leading-tight">
+        <header className="min-h-14 bg-white border-b border-slate-200 flex items-center justify-between px-3 sm:px-4 py-2 shrink-0 gap-2">
+          <button className="md:hidden text-slate-600 p-1" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-6 h-6">
+              <path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+            </svg>
+          </button>
+          <div className="flex-1" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="text-right leading-tight hidden sm:block">
               <p className="text-sm font-medium text-slate-800">{user?.name}</p>
               <p className="text-xs text-slate-500">{user?.role?.name}</p>
             </div>
-            <button className="btn-secondary text-xs" onClick={openPasswordModal}>
-              Change Password
+            <button className="btn-secondary text-xs whitespace-nowrap px-2 sm:px-3" onClick={openPasswordModal}>
+              <span className="hidden sm:inline">Change Password</span>
+              <span className="sm:hidden">Password</span>
             </button>
             <button
-              className="btn-secondary text-xs"
+              className="btn-secondary text-xs whitespace-nowrap px-2 sm:px-3"
               onClick={async () => { await logout(); navigate('/login'); }}
             >
               Sign out
             </button>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           <Outlet />
         </main>
       </div>
