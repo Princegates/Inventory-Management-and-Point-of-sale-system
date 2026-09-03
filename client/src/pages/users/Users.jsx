@@ -15,7 +15,9 @@ export default function Users() {
   const [form, setForm] = useState(empty);
   const [error, setError] = useState('');
   const [roleModalOpen, setRoleModalOpen] = useState(false);
-  const [roleForm, setRoleForm] = useState({ name: '', maxDiscountPercent: 0 });
+  const [editingRole, setEditingRole] = useState(null);
+  const [roleForm, setRoleForm] = useState({ name: '', maxDiscountPercent: 0, permissionIds: [] });
+  const [roleError, setRoleError] = useState('');
   const [permissions, setPermissions] = useState([]);
 
   const loadAll = async () => {
@@ -55,14 +57,37 @@ export default function Users() {
     loadAll();
   };
 
+  const openCreateRole = () => {
+    setEditingRole(null);
+    setRoleForm({ name: '', maxDiscountPercent: 0, permissionIds: [] });
+    setRoleError('');
+    setRoleModalOpen(true);
+  };
+
+  const openEditRole = (r) => {
+    setEditingRole(r);
+    setRoleForm({ name: r.name, maxDiscountPercent: r.max_discount_percent, permissionIds: r.permissions.map((p) => p.id) });
+    setRoleError('');
+    setRoleModalOpen(true);
+  };
+
+  const toggleRolePermission = (id) => {
+    setRoleForm((f) => {
+      const ids = new Set(f.permissionIds);
+      if (ids.has(id)) ids.delete(id); else ids.add(id);
+      return { ...f, permissionIds: [...ids] };
+    });
+  };
+
   const submitRole = async (e) => {
     e.preventDefault();
+    setRoleError('');
     try {
-      await api.post('/roles', roleForm);
+      if (editingRole) await api.put(`/roles/${editingRole.id}`, roleForm);
+      else await api.post('/roles', roleForm);
       setRoleModalOpen(false);
-      setRoleForm({ name: '', maxDiscountPercent: 0 });
       loadAll();
-    } catch (err) { setError(apiErrorMessage(err)); }
+    } catch (err) { setRoleError(apiErrorMessage(err)); }
   };
 
   return (
@@ -70,7 +95,7 @@ export default function Users() {
       <PageHeader
         title="Users & Roles"
         subtitle="Manage staff accounts, roles and location access"
-        actions={tab === 'users' ? <button className="btn-primary" onClick={openCreate}>+ New User</button> : <button className="btn-primary" onClick={() => setRoleModalOpen(true)}>+ New Role</button>}
+        actions={tab === 'users' ? <button className="btn-primary" onClick={openCreate}>+ New User</button> : <button className="btn-primary" onClick={openCreateRole}>+ New Role</button>}
       />
 
       <div className="flex gap-2 mb-4">
@@ -104,7 +129,7 @@ export default function Users() {
       {tab === 'roles' && (
         <div className="grid md:grid-cols-2 gap-4">
           {roles.map((r) => (
-            <div key={r.id} className="card p-4">
+            <button key={r.id} type="button" onClick={() => openEditRole(r)} className="card p-4 text-left hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
               <div className="flex items-center justify-between">
                 <p className="font-medium text-slate-800">{r.name}</p>
                 <span className="text-xs text-slate-500">Max discount: {r.max_discount_percent}%</span>
@@ -112,7 +137,8 @@ export default function Users() {
               <div className="flex flex-wrap gap-1 mt-2">
                 {r.permissions.map((p) => <span key={p.id} className="badge bg-slate-100 text-slate-600 text-[10px]">{p.code}</span>)}
               </div>
-            </div>
+              <span className="text-xs text-[var(--brand-600)] block mt-2">Edit</span>
+            </button>
           ))}
         </div>
       )}
@@ -154,8 +180,9 @@ export default function Users() {
         </form>
       </Modal>
 
-      <Modal open={roleModalOpen} title="New Role" onClose={() => setRoleModalOpen(false)}>
+      <Modal open={roleModalOpen} title={editingRole ? `Edit ${editingRole.name}` : 'New Role'} onClose={() => setRoleModalOpen(false)}>
         <form onSubmit={submitRole} className="space-y-3">
+          {roleError && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{roleError}</div>}
           <div><label className="label">Role Name</label><input required className="input" value={roleForm.name} onChange={(e) => setRoleForm({ ...roleForm, name: e.target.value })} /></div>
           <div><label className="label">Max Discount %</label><input type="number" className="input" value={roleForm.maxDiscountPercent} onChange={(e) => setRoleForm({ ...roleForm, maxDiscountPercent: e.target.value })} /></div>
           <div>
@@ -165,11 +192,8 @@ export default function Users() {
                 <label key={p.id} className="text-xs flex items-center gap-1.5">
                   <input
                     type="checkbox"
-                    onChange={(e) => {
-                      const ids = new Set(roleForm.permissionIds || []);
-                      if (e.target.checked) ids.add(p.id); else ids.delete(p.id);
-                      setRoleForm({ ...roleForm, permissionIds: [...ids] });
-                    }}
+                    checked={roleForm.permissionIds.includes(p.id)}
+                    onChange={() => toggleRolePermission(p.id)}
                   />
                   {p.code}
                 </label>

@@ -28,7 +28,9 @@ const create = catchAsync(async (req, res) => {
 const update = catchAsync(async (req, res) => {
   const role = await db.Role.findByPk(req.params.id);
   if (!role) throw new ApiError(404, 'Role not found');
-  if (role.is_system) throw new ApiError(403, 'System roles cannot be modified');
+  // System roles (the SRS default set) can be renamed and have their permissions/discount limit
+  // adjusted like any other role - only deletion is blocked below, since removing one out from
+  // under users still assigned to it is a much harder mistake to undo.
 
   const before = { name: role.name, max_discount_percent: role.max_discount_percent };
   const { name, description, maxDiscountPercent, permissionIds } = req.body;
