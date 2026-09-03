@@ -57,15 +57,19 @@ async function seed() {
     },
   });
   if (!created) {
+    // Re-running the seed (e.g. via /api/run-seed on a host with no shell access) should be
+    // able to reset a forgotten/mistyped admin password, not just silently leave it unchanged.
+    admin.password_hash = await bcrypt.hash(adminPassword, 10);
     admin.role_id = roleRecords['Super Administrator'].id;
     admin.has_global_location_access = true;
+    admin.status = 'active';
     await admin.save();
   }
   await admin.setLocations([mainWarehouse.id, shop1.id]);
 
   console.log('---'); // eslint-disable-line no-console
-  console.log(`Seed complete. Admin login: ${adminEmail} / ${created ? adminPassword : '(existing password preserved)'}`); // eslint-disable-line no-console
-  return { adminEmail, adminPasswordSet: created };
+  console.log(`Seed complete. Admin login: ${adminEmail} / ${adminPassword}`); // eslint-disable-line no-console
+  return { adminEmail, adminPasswordSet: true };
 }
 
 module.exports = seed;
