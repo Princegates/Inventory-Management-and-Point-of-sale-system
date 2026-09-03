@@ -31,10 +31,18 @@ const update = catchAsync(async (req, res) => {
   // System roles (the SRS default set) can be renamed and have their permissions/discount limit
   // adjusted like any other role - only deletion is blocked below, since removing one out from
   // under users still assigned to it is a much harder mistake to undo.
+  //
+  // The Super Administrator role is a further exception: only someone who is themselves a
+  // Super Administrator may change it, so a lesser role granted MANAGE_ROLES can't strip or
+  // rewrite the one role everything else answers to. Its name is locked too, so this check
+  // can't be evaded by renaming it out from under itself.
+  if (role.name === 'Super Administrator' && req.user.role?.name !== 'Super Administrator') {
+    throw new ApiError(403, 'Only a Super Administrator can modify the Super Administrator role');
+  }
 
   const before = { name: role.name, max_discount_percent: role.max_discount_percent };
   const { name, description, maxDiscountPercent, permissionIds } = req.body;
-  if (name !== undefined) role.name = name;
+  if (name !== undefined && role.name !== 'Super Administrator') role.name = name;
   if (description !== undefined) role.description = description;
   if (maxDiscountPercent !== undefined) role.max_discount_percent = maxDiscountPercent;
   await role.save();

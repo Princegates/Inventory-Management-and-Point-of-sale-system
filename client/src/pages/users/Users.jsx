@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import api, { apiErrorMessage } from '../../api/client';
 import PageHeader from '../../components/PageHeader';
 import Modal from '../../components/Modal';
+import { useAuth } from '../../context/AuthContext';
 
 const empty = { name: '', email: '', password: '', roleId: '', locationIds: [], hasGlobalLocationAccess: false };
 
 export default function Users() {
+  const { user: currentUser } = useAuth();
+  const isSuperAdmin = currentUser?.role?.name === 'Super Administrator';
   const [tab, setTab] = useState('users');
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -65,6 +68,9 @@ export default function Users() {
   };
 
   const openEditRole = (r) => {
+    // Backend enforces this too - this just avoids opening an edit form that would only 403 on
+    // save for anyone who isn't a Super Administrator themselves.
+    if (r.name === 'Super Administrator' && !isSuperAdmin) return;
     setEditingRole(r);
     setRoleForm({ name: r.name, maxDiscountPercent: r.max_discount_percent, permissionIds: r.permissions.map((p) => p.id) });
     setRoleError('');
@@ -128,18 +134,29 @@ export default function Users() {
 
       {tab === 'roles' && (
         <div className="grid md:grid-cols-2 gap-4">
-          {roles.map((r) => (
-            <button key={r.id} type="button" onClick={() => openEditRole(r)} className="card p-4 text-left hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer">
-              <div className="flex items-center justify-between">
-                <p className="font-medium text-slate-800">{r.name}</p>
-                <span className="text-xs text-slate-500">Max discount: {r.max_discount_percent}%</span>
-              </div>
-              <div className="flex flex-wrap gap-1 mt-2">
-                {r.permissions.map((p) => <span key={p.id} className="badge bg-slate-100 text-slate-600 text-[10px]">{p.code}</span>)}
-              </div>
-              <span className="text-xs text-[var(--brand-600)] block mt-2">Edit</span>
-            </button>
-          ))}
+          {roles.map((r) => {
+            const locked = r.name === 'Super Administrator' && !isSuperAdmin;
+            return (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => openEditRole(r)}
+                disabled={locked}
+                className={`card p-4 text-left transition-all ${locked ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-md hover:-translate-y-0.5 cursor-pointer'}`}
+              >
+                <div className="flex items-center justify-between">
+                  <p className="font-medium text-slate-800">{r.name}</p>
+                  <span className="text-xs text-slate-500">Max discount: {r.max_discount_percent}%</span>
+                </div>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {r.permissions.map((p) => <span key={p.id} className="badge bg-slate-100 text-slate-600 text-[10px]">{p.code}</span>)}
+                </div>
+                <span className="text-xs block mt-2 text-[var(--brand-600)]">
+                  {locked ? 'Only a Super Administrator can edit this role' : 'Edit'}
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
 
@@ -183,7 +200,17 @@ export default function Users() {
       <Modal open={roleModalOpen} title={editingRole ? `Edit ${editingRole.name}` : 'New Role'} onClose={() => setRoleModalOpen(false)}>
         <form onSubmit={submitRole} className="space-y-3">
           {roleError && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{roleError}</div>}
-          <div><label className="label">Role Name</label><input required className="input" value={roleForm.name} onChange={(e) => setRoleForm({ ...roleForm, name: e.target.value })} /></div>
+          <div>
+            <label className="label">Role Name</label>
+            <input
+              required
+              disabled={editingRole?.name === 'Super Administrator'}
+              className="input disabled:bg-slate-50 disabled:text-slate-400"
+              value={roleForm.name}
+              onChange={(e) => setRoleForm({ ...roleForm, name: e.target.value })}
+            />
+            {editingRole?.name === 'Super Administrator' && <p className="text-xs text-slate-400 mt-1">This role's name can't be changed.</p>}
+          </div>
           <div><label className="label">Max Discount %</label><input type="number" className="input" value={roleForm.maxDiscountPercent} onChange={(e) => setRoleForm({ ...roleForm, maxDiscountPercent: e.target.value })} /></div>
           <div>
             <label className="label">Permissions</label>
