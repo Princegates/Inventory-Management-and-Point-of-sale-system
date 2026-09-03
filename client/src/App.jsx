@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 import Products from './pages/products/Products';
 import Categories from './pages/categories/Categories';
+import Brands from './pages/brands/Brands';
 import Suppliers from './pages/suppliers/Suppliers';
 import Customers from './pages/customers/Customers';
 import Locations from './pages/locations/Locations';
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/sales" element={<ProtectedRoute permission={['CREATE_SALE', 'VIEW_REPORTS']}><Sales /></ProtectedRoute>} />
         <Route path="/products" element={<ProtectedRoute permission="VIEW_PRODUCTS"><Products /></ProtectedRoute>} />
         <Route path="/categories" element={<ProtectedRoute permission="MANAGE_CATEGORIES"><Categories /></ProtectedRoute>} />
+        <Route path="/brands" element={<ProtectedRoute permission="MANAGE_CATEGORIES"><Brands /></ProtectedRoute>} />
         <Route path="/suppliers" element={<ProtectedRoute permission="MANAGE_SUPPLIERS"><Suppliers /></ProtectedRoute>} />
         <Route path="/customers" element={<ProtectedRoute permission="MANAGE_CUSTOMERS"><Customers /></ProtectedRoute>} />
         <Route path="/inventory" element={<ProtectedRoute permission="VIEW_INVENTORY"><Inventory /></ProtectedRoute>} />

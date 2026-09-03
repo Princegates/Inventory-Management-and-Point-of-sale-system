@@ -7,6 +7,7 @@ const NAV = [
   { to: '/sales', label: 'Sales', permission: ['CREATE_SALE', 'VIEW_REPORTS'] },
   { to: '/products', label: 'Products', permission: 'VIEW_PRODUCTS' },
   { to: '/categories', label: 'Categories', permission: 'MANAGE_CATEGORIES' },
+  { to: '/brands', label: 'Brands', permission: 'MANAGE_CATEGORIES' },
   { to: '/suppliers', label: 'Suppliers', permission: 'MANAGE_SUPPLIERS' },
   { to: '/customers', label: 'Customers', permission: 'MANAGE_CUSTOMERS' },
   { to: '/inventory', label: 'Inventory', permission: 'VIEW_INVENTORY' },
