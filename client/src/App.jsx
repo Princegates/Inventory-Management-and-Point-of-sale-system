@@ -22,6 +22,7 @@ import Adjustments from './pages/adjustments/Adjustments';
 import Sales from './pages/sales/Sales';
 import Reports from './pages/reports/Reports';
 import AuditLog from './pages/auditlog/AuditLog';
+import Settings from './pages/settings/Settings';
 import POS from './pages/pos/POS';
 
 export default function App() {
@@ -55,6 +56,7 @@ export default function App() {
         <Route path="/locations" element={<ProtectedRoute permission="MANAGE_LOCATIONS"><Locations /></ProtectedRoute>} />
         <Route path="/users" element={<ProtectedRoute permission="MANAGE_USERS"><Users /></ProtectedRoute>} />
         <Route path="/audit-log" element={<ProtectedRoute permission="VIEW_AUDIT_LOG"><AuditLog /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute permission="MANAGE_SYSTEM_SETTINGS"><Settings /></ProtectedRoute>} />
       </Route>
     </Routes>
   );

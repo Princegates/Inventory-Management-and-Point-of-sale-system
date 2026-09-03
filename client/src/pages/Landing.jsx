@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
 import useReveal from '../hooks/useReveal';
 
 const FEATURES = [
@@ -99,6 +100,7 @@ function Step({ s, i }) {
 
 export default function Landing() {
   const { user, loading } = useAuth();
+  const { business_name: businessName, business_tagline: businessTagline } = useSettings();
   const navigate = useNavigate();
   const stepsRef = useReveal();
   const ctaRef = useReveal();
@@ -116,7 +118,7 @@ export default function Landing() {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md">
               <PhoneMark className="w-5 h-5" />
             </div>
-            <span className="font-bold text-slate-900 tracking-tight">SunZan</span>
+            <span className="font-bold text-slate-900 tracking-tight">{businessName}</span>
           </div>
           <Link to="/login" className="btn-primary shadow-sm hover:shadow-md transition-shadow">Sign In</Link>
         </div>
@@ -135,11 +137,11 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto text-center relative">
           <div className="animate-fade-in-up inline-flex items-center gap-1.5 rounded-full bg-white/80 border border-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 shadow-sm mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Mobile Phone Accessories &middot; Inventory &amp; Point of Sale
+            {businessTagline}
           </div>
 
           <h1 className="animate-fade-in-up text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]" style={{ animationDelay: '80ms' }}>
-            Run <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 bg-clip-text text-transparent">SunZan</span>
+            Run <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 bg-clip-text text-transparent">{businessName}</span>
             <br />from one screen.
           </h1>
 
@@ -179,7 +181,7 @@ export default function Landing() {
       <section className="py-24 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-slate-900">How stock moves through SunZan</h2>
+            <h2 className="text-3xl font-bold text-slate-900">How stock moves through {businessName}</h2>
           </div>
           <div ref={stepsRef} className="reveal flex flex-col sm:flex-row gap-10 sm:gap-6">
             {STEPS.map((s, i) => <Step key={s.n} s={s} i={i} />)}
@@ -203,7 +205,7 @@ export default function Landing() {
       {/* Footer */}
       <footer className="py-8 px-6 border-t border-slate-100">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-slate-400">
-          <span>&copy; {new Date().getFullYear()} SunZan &middot; Mobile Phone Accessories</span>
+          <span>&copy; {new Date().getFullYear()} {businessName}</span>
           <span>
             Powered by{' '}
             <a href="https://anknovate.com" target="_blank" rel="noopener noreferrer" className="font-medium text-slate-600 hover:text-indigo-600 transition-colors">

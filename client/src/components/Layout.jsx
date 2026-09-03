@@ -19,6 +19,7 @@ const NAV = [
   { to: '/locations', label: 'Locations', permission: 'MANAGE_LOCATIONS' },
   { to: '/users', label: 'Users & Roles', permission: 'MANAGE_USERS' },
   { to: '/audit-log', label: 'Audit Log', permission: 'VIEW_AUDIT_LOG' },
+  { to: '/settings', label: 'Business Settings', permission: 'MANAGE_SYSTEM_SETTINGS' },
 ];
 
 export default function Layout() {

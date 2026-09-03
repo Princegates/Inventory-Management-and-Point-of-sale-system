@@ -1,11 +1,13 @@
 import { formatMoney, formatDateTime } from '../../utils/format';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function Receipt({ sale, onClose, onNewSale }) {
+  const { business_name } = useSettings();
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="card w-full max-w-sm">
         <div id="receipt-print" className="p-5 font-mono text-xs">
-          <p className="text-center font-semibold text-sm">SunZan</p>
+          <p className="text-center font-semibold text-sm">{business_name}</p>
           <p className="text-center">{sale.location?.name}</p>
           <div className="border-t border-dashed border-slate-400 my-2" />
           <p>Receipt: {sale.receipt_number}</p>

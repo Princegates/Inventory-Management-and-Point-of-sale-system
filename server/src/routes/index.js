@@ -3,6 +3,9 @@ const { authenticate } = require('../middleware/auth');
 
 router.use('/auth', require('./auth.routes'));
 
+// Business name/tagline/currency for the public landing page - no session required.
+router.get('/settings/public', require('../controllers/settingsController').getPublic);
+
 // Everything below requires a valid session.
 router.use(authenticate);
 
@@ -27,5 +30,6 @@ router.use('/reports', require('./report.routes'));
 router.use('/dashboard', require('./dashboard.routes'));
 router.use('/notifications', require('./notification.routes'));
 router.use('/audit-logs', require('./auditLog.routes'));
+router.use('/settings', require('./settings.routes'));
 
 module.exports = router;
