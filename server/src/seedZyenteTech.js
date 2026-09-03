@@ -157,10 +157,19 @@ async function run() {
   console.log(`Products created/matched: ${created} (${totalUnits} total opening units across the catalog).`); // eslint-disable-line no-console
   console.log(`Opening stock credited: ${stocked}. Already stocked (skipped): ${skippedStock}.`); // eslint-disable-line no-console
   console.log(`All stock was credited into: ${shop.name} (${shop.code}).`); // eslint-disable-line no-console
-  process.exit(0);
+  return { categories: CATEGORIES.length, productsCreatedOrMatched: created, stocked, skippedStock };
 }
 
-run().catch((err) => {
-  console.error('Seed failed:', err); // eslint-disable-line no-console
-  process.exit(1);
-});
+module.exports = run;
+
+// Only run immediately (and exit the process) when invoked directly as `node src/seedZyenteTech.js` -
+// app.js also imports this to expose it over HTTP for hosts with no shell access, and
+// process.exit() there would kill the whole running server.
+if (require.main === module) {
+  run()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error('Seed failed:', err); // eslint-disable-line no-console
+      process.exit(1);
+    });
+}

@@ -30,6 +30,19 @@ if (process.env.SEED_KEY) {
       next(err);
     }
   });
+
+  // Same idea, for importing the real Zyente Tech catalog (categories + products + opening
+  // stock) - same key as run-seed, since both are only ever needed during initial setup.
+  app.get('/api/run-catalog-import', async (req, res, next) => {
+    if (req.query.key !== process.env.SEED_KEY) return res.status(404).json({ error: 'Not found' });
+    try {
+      const importCatalog = require('./seedZyenteTech');
+      const result = await importCatalog();
+      res.json({ success: true, ...result });
+    } catch (err) {
+      next(err);
+    }
+  });
 }
 
 app.use('/api', routes);
