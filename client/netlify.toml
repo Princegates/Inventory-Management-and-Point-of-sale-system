@@ -1,0 +1,19 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Proxies API calls through Netlify's edge to the Render-hosted API, so the browser only ever
+# talks to the Netlify origin - no CORS configuration needed on the client side. Replace the
+# target with your actual Render service URL after your first deploy.
+[[redirects]]
+  from = "/api/*"
+  to = "https://ims-pos-api.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# SPA fallback so client-side routes (e.g. /products, /pos) load correctly on a full page
+# refresh or direct link instead of returning Netlify's 404.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

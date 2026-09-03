@@ -98,6 +98,47 @@ Open `http://localhost:5173`, sign in, and:
 - Go to **Point of Sale**, open a cashier session at that shop, and ring up a sale.
 - Check **Dashboard** and **Reports** to see the numbers update immediately.
 
+## Publishing (Supabase + Render + Netlify)
+
+The codebase is unchanged for this path - only configuration differs from local dev. Three
+services, in this order:
+
+### 1. Database - Supabase
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. Project Settings -> Database -> Connection string -> **URI**, "Transaction pooler" mode
+   (works from a serverless/PaaS host, unlike the direct connection). Copy it - you'll set this
+   as `DATABASE_URL` in Render.
+3. Nothing else to do here - the API creates its own tables on boot via `sequelize.sync()`, and
+   `npm run seed` populates roles/permissions/an admin user. Supabase's own Auth/Storage/RLS
+   features are unused; it's acting purely as a managed Postgres instance for the Express API.
+
+### 2. API - Render
+
+1. Push this repo to GitHub (already done if you're reading this from the repo).
+2. In Render: **New** -> **Blueprint**, point it at the repo - it will read `render.yaml` at the
+   root and create the `ims-pos-api` web service (root directory `server/`).
+3. Fill in the env vars Render leaves blank: `DATABASE_URL` (from Supabase, step 1),
+   `CORS_ORIGIN` (your Netlify URL - can be filled in after step 3), `SEED_ADMIN_EMAIL`,
+   `SEED_ADMIN_PASSWORD`. `JWT_SECRET` is auto-generated.
+4. Deploy. `npm run seed` runs automatically on each boot (idempotent) before `npm start`, so
+   roles/permissions/the admin user are always present. Note the service URL Render gives you,
+   e.g. `https://ims-pos-api.onrender.com`.
+
+### 3. Client - Netlify
+
+1. In Netlify: **Add new site** -> import this repo, set **Base directory** to `client`. It will
+   pick up `client/netlify.toml` for the build command and publish directory automatically.
+2. Edit `client/netlify.toml` and replace the `to =` target in the `/api/*` redirect with your
+   actual Render URL from step 2, then commit/push (Netlify redeploys on push). This makes
+   Netlify proxy `/api/*` requests straight through to Render at its edge, so the browser only
+   ever talks to your Netlify domain - no CORS configuration needed on the client side.
+3. Deploy. Once you have the Netlify URL, go back to Render and set `CORS_ORIGIN` to it (needed
+   for any direct, non-proxied calls, e.g. from a future mobile client).
+
+Sign in with the `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` you set in step 2 and change the
+password from the app once logged in.
+
 ## Roles seeded by default
 
 Super Administrator, Inventory Manager, Warehouse Officer, Shop Manager, Cashier, Accountant,
