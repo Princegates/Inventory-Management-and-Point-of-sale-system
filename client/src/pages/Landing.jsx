@@ -8,24 +8,36 @@ const FEATURES = [
     title: 'Real-Time Inventory',
     desc: 'Every case, charger, screen protector and power bank tracked live across your shop and warehouse - never guess what\'s on the shelf again.',
     color: 'from-indigo-500 to-violet-500',
+    // A literal phone/device outline - the thing actually being tracked - rather than a generic box.
     icon: (
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M20.25 7.5l-8.25-4.5L3.75 7.5m16.5 0l-8.25 4.5m8.25-4.5v9l-8.25 4.5m0-9L3.75 7.5m8.25 4.5v9M3.75 7.5v9l8.25 4.5" />
+      <>
+        <rect x="7" y="2.5" width="10" height="19" rx="2.2" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} />
+        <circle cx="12" cy="18.4" r="0.9" fill="currentColor" stroke="none" />
+        <line x1="10" y1="5" x2="14" y2="5" strokeLinecap="round" strokeWidth={1.8} />
+      </>
     ),
   },
   {
     title: 'Fast Point of Sale',
     desc: 'Scan or search, cart, split cash and mobile money payments, print a receipt - built for a busy counter, not a boardroom.',
     color: 'from-emerald-500 to-teal-500',
+    // A printed receipt - literal to "print a receipt" at checkout.
     icon: (
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 1.98-4.684 2.57-7.128.075-.311-.174-.6-.494-.6H5.106M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+      <>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M6 3h12v16.5l-1.8-1.2-1.8 1.2-1.8-1.2-1.8 1.2-1.8-1.2-1.8 1.2V3z" />
+        <line x1="8.5" y1="7" x2="15.5" y2="7" strokeLinecap="round" strokeWidth={1.5} />
+        <line x1="8.5" y1="10" x2="15.5" y2="10" strokeLinecap="round" strokeWidth={1.5} />
+        <line x1="8.5" y1="13" x2="12.5" y2="13" strokeLinecap="round" strokeWidth={1.5} />
+      </>
     ),
   },
   {
     title: 'Purchasing & Transfers',
-    desc: 'Receive stock from suppliers, move it warehouse-to-shop with a full approval trail - nothing moves without a record.',
+    desc: 'Receive stock - chargers, cables, power banks - from suppliers, move it warehouse-to-shop with a full approval trail.',
     color: 'from-amber-500 to-orange-500',
+    // A charging bolt - literal to "charger", the accessory category itself.
     icon: (
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.5 2.25L4.5 13.5h6.75l-1.5 8.25 9-11.25h-6.75l1.5-8.25z" />
     ),
   },
   {
@@ -37,6 +49,17 @@ const FEATURES = [
     ),
   },
 ];
+
+// Small phone-shaped mark used in the navbar and hero badge, in place of a plain letter monogram.
+function PhoneMark({ className }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className={className}>
+      <rect x="7" y="2.5" width="10" height="19" rx="2.2" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} />
+      <circle cx="12" cy="18.4" r="1" fill="currentColor" stroke="none" />
+      <line x1="10" y1="5" x2="14" y2="5" strokeLinecap="round" strokeWidth={2} />
+    </svg>
+  );
+}
 
 const STEPS = [
   { n: '01', title: 'Stock In', desc: 'Receive from your supplier straight into the warehouse, or bring stock in directly.' },
@@ -90,7 +113,9 @@ export default function Landing() {
       <header className="fixed top-0 inset-x-0 z-50 bg-white/70 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-sm shadow-md">S</div>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md">
+              <PhoneMark className="w-5 h-5" />
+            </div>
             <span className="font-bold text-slate-900 tracking-tight">SunZan</span>
           </div>
           <Link to="/login" className="btn-primary shadow-sm hover:shadow-md transition-shadow">Sign In</Link>
