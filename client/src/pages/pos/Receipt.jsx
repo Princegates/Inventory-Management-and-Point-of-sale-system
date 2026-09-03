@@ -5,7 +5,7 @@ export default function Receipt({ sale, onClose, onNewSale }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="card w-full max-w-sm">
         <div id="receipt-print" className="p-5 font-mono text-xs">
-          <p className="text-center font-semibold text-sm">IMS + POS</p>
+          <p className="text-center font-semibold text-sm">SunZan</p>
           <p className="text-center">{sale.location?.name}</p>
           <div className="border-t border-dashed border-slate-400 my-2" />
           <p>Receipt: {sale.receipt_number}</p>
@@ -32,6 +32,7 @@ export default function Receipt({ sale, onClose, onNewSale }) {
           <div className="flex justify-between"><span>Change</span><span>{formatMoney(sale.change_due)}</span></div>
           <div className="border-t border-dashed border-slate-400 my-2" />
           <p className="text-center">Thank you for your purchase!</p>
+          <p className="text-center text-[10px] text-slate-400 mt-2">Powered by Anknovate IT Services &middot; anknovate.com</p>
         </div>
         <div className="flex gap-2 p-4 border-t border-slate-200 print:hidden">
           <button className="btn-secondary flex-1" onClick={() => window.print()}>Print</button>

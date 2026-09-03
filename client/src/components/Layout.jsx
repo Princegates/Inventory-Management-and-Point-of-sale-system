@@ -31,8 +31,8 @@ export default function Layout() {
     <div className="flex h-screen bg-slate-100">
       <aside className="w-60 shrink-0 bg-slate-900 text-slate-200 flex flex-col">
         <div className="px-4 py-4 border-b border-slate-800">
-          <p className="font-semibold text-white text-sm leading-tight">IMS + POS</p>
-          <p className="text-xs text-slate-400">Inventory &amp; Point of Sale</p>
+          <p className="font-semibold text-white text-sm leading-tight">Anknovate</p>
+          <p className="text-xs text-slate-400">Inventory &amp; POS System</p>
         </div>
         <nav className="flex-1 overflow-y-auto py-2">
           {items.map((item) => (

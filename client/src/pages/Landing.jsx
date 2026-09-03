@@ -204,7 +204,12 @@ export default function Landing() {
       <footer className="py-8 px-6 border-t border-slate-100">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-slate-400">
           <span>&copy; {new Date().getFullYear()} SunZan &middot; Mobile Phone Accessories</span>
-          <span>Powered by an integrated inventory &amp; POS system</span>
+          <span>
+            Powered by{' '}
+            <a href="https://anknovate.com" target="_blank" rel="noopener noreferrer" className="font-medium text-slate-600 hover:text-indigo-600 transition-colors">
+              Anknovate IT Services
+            </a>
+          </span>
         </div>
       </footer>
     </div>

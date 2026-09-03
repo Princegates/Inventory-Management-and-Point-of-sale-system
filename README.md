@@ -1,10 +1,13 @@
-# Inventory Management & Point-of-Sale System
+# Anknovate Inventory Management and POS System
 
-A full-stack, integrated Inventory Management and Point-of-Sale (POS) system, built from the
-project's Software Requirements Specification (SRS). The system is transaction-driven: every
-purchase, sale, transfer, return and adjustment flows through a single inventory engine, so
-stock, sales and financial reports are always derived from one consistent ledger rather than
-manual reconciliation.
+A full-stack, integrated Inventory Management and Point-of-Sale (POS) system, built by
+[Anknovate IT Services](https://anknovate.com) from the project's Software Requirements
+Specification (SRS). This deployment runs SunZan, a mobile phone accessories retailer - the
+codebase itself is generic and not specific to that business.
+
+The system is transaction-driven: every purchase, sale, transfer, return and adjustment flows
+through a single inventory engine, so stock, sales and financial reports are always derived from
+one consistent ledger rather than manual reconciliation.
 
 ## Architecture
 
