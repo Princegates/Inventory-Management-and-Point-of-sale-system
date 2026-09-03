@@ -46,7 +46,7 @@ export default function POSScreen({ session, onSessionClosed }) {
       const existing = c.find((i) => i.productId === product.id);
       if (existing) return c.map((i) => i.productId === product.id ? { ...i, quantity: i.quantity + 1 } : i);
       return [...c, {
-        productId: product.id, name: product.name, sku: product.sku,
+        productId: product.id, name: product.name, sku: product.sku, categoryName: product.category?.name || null,
         unitPrice: Number(product.selling_price), taxRate: Number(product.tax_rate),
         quantity: 1, discountPercent: 0,
       }];
@@ -139,8 +139,11 @@ export default function POSScreen({ session, onSessionClosed }) {
               {results.map((p) => {
                 const qty = p.inventory?.reduce((s, i) => s + i.quantity, 0) ?? null;
                 return (
-                  <button key={p.id} className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 flex justify-between" onClick={() => addToCart(p)}>
-                    <span>{p.name} <span className="text-slate-400 text-xs">({p.sku})</span></span>
+                  <button key={p.id} className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 flex justify-between items-center" onClick={() => addToCart(p)}>
+                    <span className="flex items-center gap-2">
+                      <span>{p.name} <span className="text-slate-400 text-xs">({p.sku})</span></span>
+                      {p.category && <span className="badge bg-indigo-100 text-indigo-700 text-[10px]">{p.category.name}</span>}
+                    </span>
                     <span className="text-slate-500">{formatMoney(p.selling_price)} {qty !== null && <span className="text-xs">&middot; {qty} in stock</span>}</span>
                   </button>
                 );
@@ -157,7 +160,10 @@ export default function POSScreen({ session, onSessionClosed }) {
                 const t = lineTotal(line);
                 return (
                   <tr key={line.productId}>
-                    <td>{line.name}</td>
+                    <td>
+                      {line.name}
+                      {line.categoryName && <div className="text-xs text-indigo-600">{line.categoryName}</div>}
+                    </td>
                     <td>
                       <input type="number" min="1" className="input w-16" value={line.quantity} onChange={(e) => updateLine(line.productId, 'quantity', Math.max(1, Number(e.target.value)))} />
                     </td>
