@@ -18,6 +18,7 @@ export default function Transfers() {
   const [modalOpen, setModalOpen] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({ sourceLocationId: '', destinationLocationId: '', notes: '', items: [] });
+  const [sourceBalances, setSourceBalances] = useState({}); // productId (string) -> quantity available at the chosen source
 
   const load = async () => {
     const { data } = await api.get('/stock-transfers');
@@ -29,6 +30,20 @@ export default function Transfers() {
     api.get('/locations').then((r) => setLocations(r.data.locations));
     api.get('/products', { params: { pageSize: 200 } }).then((r) => setProducts(r.data.products));
   }, []);
+
+  // Shows how much of each product is actually available at the source location, so a
+  // request can't be built against stock that isn't really there.
+  useEffect(() => {
+    if (!form.sourceLocationId) {
+      setSourceBalances({});
+      return;
+    }
+    api.get('/inventory', { params: { locationId: form.sourceLocationId } }).then((r) => {
+      const byProduct = {};
+      r.data.inventory.forEach((row) => { byProduct[row.product_id] = row.quantity; });
+      setSourceBalances(byProduct);
+    });
+  }, [form.sourceLocationId]);
 
   const addItem = () => setForm((f) => ({ ...f, items: [...f.items, { productId: '', quantity: 1 }] }));
   const updateItem = (idx, key, value) => setForm((f) => ({ ...f, items: f.items.map((it, i) => i === idx ? { ...it, [key]: value } : it) }));
@@ -103,19 +118,31 @@ export default function Transfers() {
               <label className="label mb-0">Items</label>
               <button type="button" className="btn-secondary text-xs" onClick={addItem}>+ Add item</button>
             </div>
+            {!form.sourceLocationId && <p className="text-xs text-slate-400 mb-2">Choose a source location to see how much stock is available to move.</p>}
             <div className="space-y-2">
               {form.items.map((item, idx) => {
                 const chosenElsewhere = new Set(form.items.filter((_, i) => i !== idx).map((it) => it.productId).filter(Boolean));
+                const available = item.productId && form.sourceLocationId ? (sourceBalances[item.productId] ?? 0) : null;
+                const overAvailable = available !== null && Number(item.quantity) > available;
                 return (
-                  <div key={idx} className="flex gap-2 items-center">
-                    <select className="input flex-1" value={item.productId} onChange={(e) => updateItem(idx, 'productId', e.target.value)}>
-                      <option value="">Select product</option>
-                      {products.filter((p) => String(p.id) === String(item.productId) || !chosenElsewhere.has(String(p.id))).map((p) => (
-                        <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>
-                      ))}
-                    </select>
-                    <input type="number" min="1" className="input w-24" value={item.quantity} onChange={(e) => updateItem(idx, 'quantity', e.target.value)} />
-                    <button type="button" className="text-red-500 text-xs" onClick={() => removeItem(idx)}>Remove</button>
+                  <div key={idx}>
+                    <div className="flex gap-2 items-center">
+                      <select className="input flex-1" value={item.productId} onChange={(e) => updateItem(idx, 'productId', e.target.value)}>
+                        <option value="">Select product</option>
+                        {products.filter((p) => String(p.id) === String(item.productId) || !chosenElsewhere.has(String(p.id))).map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} ({p.sku}){form.sourceLocationId ? ` — ${sourceBalances[p.id] ?? 0} in stock` : ''}
+                          </option>
+                        ))}
+                      </select>
+                      <input type="number" min="1" className="input w-24" value={item.quantity} onChange={(e) => updateItem(idx, 'quantity', e.target.value)} />
+                      <button type="button" className="text-red-500 text-xs" onClick={() => removeItem(idx)}>Remove</button>
+                    </div>
+                    {available !== null && (
+                      <p className={`text-xs mt-0.5 ${overAvailable ? 'text-red-600' : 'text-slate-400'}`}>
+                        {overAvailable ? `Only ${available} available - reduce the quantity` : `${available} available at source`}
+                      </p>
+                    )}
                   </div>
                 );
               })}
@@ -127,7 +154,7 @@ export default function Transfers() {
 
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" className="btn-secondary" onClick={() => setModalOpen(false)}>Cancel</button>
-            <button className="btn-primary" disabled={!form.items.length}>Request Transfer</button>
+            <button className="btn-primary" disabled={!form.items.length || (!!form.sourceLocationId && form.items.some((it) => it.productId && Number(it.quantity) > (sourceBalances[it.productId] ?? 0)))}>Request Transfer</button>
           </div>
         </form>
       </Modal>
