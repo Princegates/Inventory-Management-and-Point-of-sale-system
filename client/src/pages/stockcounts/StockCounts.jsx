@@ -66,7 +66,7 @@ export default function StockCounts() {
                 <td>{c.counter?.name}</td>
                 <td><span className={`badge capitalize ${STATUS_COLORS[c.status]}`}>{c.status}</span></td>
                 <td>{formatDateTime(c.createdAt)}</td>
-                <td><button className="text-indigo-600 text-xs hover:underline" onClick={() => openDetail(c)}>Open</button></td>
+                <td><button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => openDetail(c)}>Open</button></td>
               </tr>
             ))}
             {counts.length === 0 && <tr><td colSpan={6} className="text-center text-slate-400 py-6">No stock counts yet</td></tr>}

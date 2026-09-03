@@ -69,7 +69,7 @@ export default function Sales() {
                 <td>{formatMoney(s.total)}</td>
                 <td><span className={`badge ${s.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>{s.status}</span></td>
                 <td>{formatDateTime(s.createdAt)}</td>
-                <td><button className="text-indigo-600 text-xs hover:underline" onClick={() => openDetail(s)}>View</button></td>
+                <td><button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => openDetail(s)}>View</button></td>
               </tr>
             ))}
             {sales.length === 0 && <tr><td colSpan={7} className="text-center text-slate-400 py-6">No sales yet</td></tr>}

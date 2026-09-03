@@ -142,7 +142,7 @@ export default function POSScreen({ session, onSessionClosed }) {
                   <button key={p.id} className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 flex justify-between items-center" onClick={() => addToCart(p)}>
                     <span className="flex items-center gap-2">
                       <span>{p.name} <span className="text-slate-400 text-xs">({p.sku})</span></span>
-                      {p.category && <span className="badge bg-indigo-100 text-indigo-700 text-[10px]">{p.category.name}</span>}
+                      {p.category && <span className="badge bg-[var(--brand-100)] text-[var(--brand-700)] text-[10px]">{p.category.name}</span>}
                     </span>
                     <span className="text-slate-500">{formatMoney(p.selling_price)} {qty !== null && <span className="text-xs">&middot; {qty} in stock</span>}</span>
                   </button>
@@ -162,7 +162,7 @@ export default function POSScreen({ session, onSessionClosed }) {
                   <tr key={line.productId}>
                     <td>
                       {line.name}
-                      {line.categoryName && <div className="text-xs text-indigo-600">{line.categoryName}</div>}
+                      {line.categoryName && <div className="text-xs text-[var(--brand-600)]">{line.categoryName}</div>}
                     </td>
                     <td>
                       <input type="number" min="1" className="input w-16" value={line.quantity} onChange={(e) => updateLine(line.productId, 'quantity', Math.max(1, Number(e.target.value)))} />

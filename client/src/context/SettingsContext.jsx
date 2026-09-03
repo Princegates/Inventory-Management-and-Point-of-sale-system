@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import api from '../api/client';
 import { setCurrencySymbol } from '../utils/format';
+import { applyColorSkin, DEFAULT_COLOR_SKIN } from '../utils/colorSkins';
 
 const SettingsContext = createContext(null);
 
@@ -9,6 +10,7 @@ const DEFAULTS = {
   business_tagline: 'Mobile Phone Accessories · Inventory & Point of Sale',
   currency_symbol: 'GH₵',
   currency_code: 'GHS',
+  color_skin: DEFAULT_COLOR_SKIN,
 };
 
 // Fetches the public subset of business settings (no auth required) so the Landing page,
@@ -23,8 +25,10 @@ export function SettingsProvider({ children }) {
       const { data } = await api.get('/settings/public');
       setSettings({ ...DEFAULTS, ...data.settings });
       setCurrencySymbol(data.settings.currency_symbol);
+      applyColorSkin(data.settings.color_skin);
     } catch {
       setCurrencySymbol(DEFAULTS.currency_symbol);
+      applyColorSkin(DEFAULTS.color_skin);
     } finally {
       setLoading(false);
     }

@@ -51,7 +51,7 @@ export default function Suppliers() {
                 <td>{s.phone || '-'}</td>
                 <td>{s.email || '-'}</td>
                 <td><span className="badge bg-emerald-100 text-emerald-700">{s.status}</span></td>
-                <td><button className="text-indigo-600 text-xs font-medium hover:underline" onClick={() => openEdit(s)}>Edit</button></td>
+                <td><button className="text-[var(--brand-600)] text-xs font-medium hover:underline" onClick={() => openEdit(s)}>Edit</button></td>
               </tr>
             ))}
             {suppliers.length === 0 && <tr><td colSpan={6} className="text-center text-slate-400 py-6">No suppliers yet</td></tr>}

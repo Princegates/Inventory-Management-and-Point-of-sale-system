@@ -50,7 +50,7 @@ export default function ForgotPassword() {
               <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2 space-y-1">
                 <p className="font-medium">Email sending isn't configured on this server.</p>
                 <p>For local testing, use this link directly:</p>
-                <Link className="text-indigo-600 underline break-all" to={`/reset-password?token=${result.resetToken}`}>
+                <Link className="text-[var(--brand-600)] underline break-all" to={`/reset-password?token=${result.resetToken}`}>
                   /reset-password?token={result.resetToken}
                 </Link>
               </div>
@@ -59,7 +59,7 @@ export default function ForgotPassword() {
         )}
 
         <p className="text-center text-sm text-slate-500 mt-4">
-          <Link to="/login" className="text-indigo-600 hover:underline">Back to sign in</Link>
+          <Link to="/login" className="text-[var(--brand-600)] hover:underline">Back to sign in</Link>
         </p>
       </div>
     </div>

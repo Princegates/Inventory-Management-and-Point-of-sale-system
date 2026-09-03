@@ -66,9 +66,9 @@ export default function Transfers() {
                 <td><span className={`badge capitalize ${STATUS_COLORS[t.status]}`}>{t.status.replaceAll('_', ' ')}</span></td>
                 <td>{formatDateTime(t.createdAt)}</td>
                 <td className="space-x-2">
-                  {t.status === 'requested' && hasPermission('APPROVE_TRANSFER') && <button className="text-indigo-600 text-xs hover:underline" onClick={() => action(t, 'approve')}>Approve</button>}
-                  {t.status === 'approved' && hasPermission('ISSUE_TRANSFER') && <button className="text-indigo-600 text-xs hover:underline" onClick={() => action(t, 'issue')}>Issue</button>}
-                  {t.status === 'in_transit' && hasPermission('RECEIVE_TRANSFER') && <button className="text-indigo-600 text-xs hover:underline" onClick={() => action(t, 'receive')}>Receive</button>}
+                  {t.status === 'requested' && hasPermission('APPROVE_TRANSFER') && <button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => action(t, 'approve')}>Approve</button>}
+                  {t.status === 'approved' && hasPermission('ISSUE_TRANSFER') && <button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => action(t, 'issue')}>Issue</button>}
+                  {t.status === 'in_transit' && hasPermission('RECEIVE_TRANSFER') && <button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => action(t, 'receive')}>Receive</button>}
                   {['requested', 'approved', 'in_transit'].includes(t.status) && <button className="text-red-500 text-xs hover:underline" onClick={() => action(t, 'cancel')}>Cancel</button>}
                 </td>
               </tr>

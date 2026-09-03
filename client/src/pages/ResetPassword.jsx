@@ -67,7 +67,7 @@ export default function ResetPassword() {
         )}
 
         <p className="text-center text-sm text-slate-500 mt-4">
-          <Link to="/login" className="text-indigo-600 hover:underline">Back to sign in</Link>
+          <Link to="/login" className="text-[var(--brand-600)] hover:underline">Back to sign in</Link>
         </p>
       </div>
     </div>

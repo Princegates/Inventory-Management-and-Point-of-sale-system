@@ -13,11 +13,13 @@ const DEFAULTS = {
   business_email: '',
   currency_symbol: 'GH₵',
   currency_code: 'GHS',
+  color_skin: 'indigo',
 };
 
 const EDITABLE_KEYS = Object.keys(DEFAULTS);
-// Subset exposed without authentication, for the public landing page.
-const PUBLIC_KEYS = ['business_name', 'business_tagline', 'currency_symbol', 'currency_code'];
+// Subset exposed without authentication - the landing and login pages need these to render
+// with the right business identity and colour skin before anyone signs in.
+const PUBLIC_KEYS = ['business_name', 'business_tagline', 'currency_symbol', 'currency_code', 'color_skin'];
 
 async function readSettings(keys) {
   const rows = await db.SystemSetting.findAll({ where: { key: keys } });

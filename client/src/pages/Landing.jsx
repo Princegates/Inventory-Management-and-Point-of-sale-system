@@ -8,7 +8,7 @@ const FEATURES = [
   {
     title: 'Real-Time Inventory',
     desc: 'Every case, charger, screen protector and power bank tracked live across your shop and warehouse - never guess what\'s on the shelf again.',
-    color: 'from-indigo-500 to-violet-500',
+    color: 'from-[var(--brand-500)] to-violet-500',
     // A literal phone/device outline - the thing actually being tracked - rather than a generic box.
     icon: (
       <>
@@ -91,7 +91,7 @@ function Step({ s, i }) {
   const ref = useReveal();
   return (
     <div ref={ref} className="reveal relative flex-1" style={{ animationDelay: `${i * 150}ms` }}>
-      <div className="text-5xl font-black bg-gradient-to-br from-indigo-200 to-violet-200 bg-clip-text text-transparent select-none">{s.n}</div>
+      <div className="text-5xl font-black bg-gradient-to-br from-[var(--brand-200)] to-violet-200 bg-clip-text text-transparent select-none">{s.n}</div>
       <h4 className="font-semibold text-slate-900 mt-1 mb-1.5">{s.title}</h4>
       <p className="text-sm text-slate-500 leading-relaxed">{s.desc}</p>
     </div>
@@ -115,7 +115,7 @@ export default function Landing() {
       <header className="fixed top-0 inset-x-0 z-50 bg-white/70 backdrop-blur-md border-b border-slate-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--brand-600)] to-violet-600 flex items-center justify-center text-white shadow-md">
               <PhoneMark className="w-5 h-5" />
             </div>
             <span className="font-bold text-slate-900 tracking-tight">{businessName}</span>
@@ -128,20 +128,20 @@ export default function Landing() {
       <section className="relative pt-40 pb-28 px-6">
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-50 via-violet-50 to-rose-50 animate-gradient-shift"
+          className="absolute inset-0 -z-10 bg-gradient-to-br from-[var(--brand-50)] via-violet-50 to-rose-50 animate-gradient-shift"
         />
-        <div aria-hidden="true" className="absolute top-24 left-[8%] w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-400 to-violet-400 opacity-20 blur-sm animate-float" />
+        <div aria-hidden="true" className="absolute top-24 left-[8%] w-24 h-24 rounded-3xl bg-gradient-to-br from-[var(--brand-400)] to-violet-400 opacity-20 blur-sm animate-float" />
         <div aria-hidden="true" className="absolute top-48 right-[12%] w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-400 opacity-20 blur-sm animate-float-delayed" />
         <div aria-hidden="true" className="absolute bottom-16 left-[18%] w-20 h-20 rounded-full bg-gradient-to-br from-rose-400 to-pink-400 opacity-20 blur-sm animate-float-slow" />
 
         <div className="max-w-4xl mx-auto text-center relative">
-          <div className="animate-fade-in-up inline-flex items-center gap-1.5 rounded-full bg-white/80 border border-indigo-100 px-3 py-1 text-xs font-medium text-indigo-700 shadow-sm mb-6">
+          <div className="animate-fade-in-up inline-flex items-center gap-1.5 rounded-full bg-white/80 border border-[var(--brand-100)] px-3 py-1 text-xs font-medium text-[var(--brand-700)] shadow-sm mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             {businessTagline}
           </div>
 
           <h1 className="animate-fade-in-up text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]" style={{ animationDelay: '80ms' }}>
-            Run <span className="bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 bg-clip-text text-transparent">{businessName}</span>
+            Run <span className="bg-gradient-to-r from-[var(--brand-600)] via-violet-600 to-rose-500 bg-clip-text text-transparent">{businessName}</span>
             <br />from one screen.
           </h1>
 
@@ -151,7 +151,7 @@ export default function Landing() {
           </p>
 
           <div className="animate-fade-in-up mt-9 flex items-center justify-center gap-4" style={{ animationDelay: '240ms' }}>
-            <Link to="/login" className="animate-glow-pulse inline-flex items-center gap-2 rounded-lg bg-indigo-600 text-white px-6 py-3 text-sm font-semibold shadow-lg hover:bg-indigo-700 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+            <Link to="/login" className="animate-glow-pulse inline-flex items-center gap-2 rounded-lg bg-[var(--brand-600)] text-white px-6 py-3 text-sm font-semibold shadow-lg hover:bg-[var(--brand-700)] hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
               Sign In to Your Account
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
                 <path fillRule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clipRule="evenodd" />
@@ -191,12 +191,12 @@ export default function Landing() {
 
       {/* CTA band */}
       <section ref={ctaRef} className="reveal relative py-20 px-6 overflow-hidden">
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-indigo-600 via-violet-600 to-rose-500 animate-gradient-shift" />
+        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-[var(--brand-600)] via-violet-600 to-rose-500 animate-gradient-shift" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-[0.07] bg-[radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px]" />
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-white">Ready to run the shop smarter?</h2>
-          <p className="text-indigo-100 mt-3">Sign in to open a till, check stock, or see today's sales.</p>
-          <Link to="/login" className="mt-7 inline-flex items-center gap-2 rounded-lg bg-white text-indigo-700 px-6 py-3 text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+          <p className="text-[var(--brand-100)] mt-3">Sign in to open a till, check stock, or see today's sales.</p>
+          <Link to="/login" className="mt-7 inline-flex items-center gap-2 rounded-lg bg-white text-[var(--brand-700)] px-6 py-3 text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
             Sign In
           </Link>
         </div>
@@ -208,7 +208,7 @@ export default function Landing() {
           <span>&copy; {new Date().getFullYear()} {businessName}</span>
           <span>
             Powered by{' '}
-            <a href="https://anknovate.com" target="_blank" rel="noopener noreferrer" className="font-medium text-slate-600 hover:text-indigo-600 transition-colors">
+            <a href="https://anknovate.com" target="_blank" rel="noopener noreferrer" className="font-medium text-slate-600 hover:text-[var(--brand-600)] transition-colors">
               Anknovate IT Services
             </a>
           </span>

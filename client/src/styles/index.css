@@ -2,6 +2,17 @@
 
 :root {
   color-scheme: light;
+  /* Brand/accent colour skin - default is Indigo. Overridden at runtime by applyColorSkin()
+     (utils/colorSkins.js) so every bg-[var(--brand-*)]/text-[var(--brand-*)] usage across the
+     app repaints instantly when the Super Administrator picks a different skin in Settings. */
+  --brand-50: #eef2ff;
+  --brand-100: #e0e7ff;
+  --brand-200: #c7d2fe;
+  --brand-400: #818cf8;
+  --brand-500: #6366f1;
+  --brand-600: #4f46e5;
+  --brand-700: #4338ca;
+  --brand-glow: 99, 102, 241;
 }
 
 body {
@@ -17,7 +28,7 @@ body {
 }
 
 .btn-primary {
-  @apply bg-indigo-600 text-white hover:bg-indigo-700;
+  @apply bg-[var(--brand-600)] text-white hover:bg-[var(--brand-700)];
 }
 
 .btn-secondary {
@@ -29,7 +40,7 @@ body {
 }
 
 .input {
-  @apply block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+  @apply block w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)] focus:border-[var(--brand-500)];
 }
 
 .label {
@@ -108,8 +119,8 @@ body {
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.45); }
-  50% { box-shadow: 0 0 0 14px rgba(99, 102, 241, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--brand-glow), 0.45); }
+  50% { box-shadow: 0 0 0 14px rgba(var(--brand-glow), 0); }
 }
 .animate-glow-pulse {
   animation: glow-pulse 2.4s ease-out infinite;

@@ -87,7 +87,7 @@ export default function Products() {
                 </td>
                 <td>
                   {hasPermission('EDIT_PRODUCTS') && (
-                    <button className="text-indigo-600 text-xs font-medium hover:underline" onClick={() => openEdit(p)}>Edit</button>
+                    <button className="text-[var(--brand-600)] text-xs font-medium hover:underline" onClick={() => openEdit(p)}>Edit</button>
                   )}
                 </td>
               </tr>

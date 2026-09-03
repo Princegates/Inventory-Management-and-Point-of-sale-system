@@ -91,7 +91,7 @@ export default function Users() {
                   <td>{u.hasGlobalLocationAccess ? 'All locations' : u.locations.map((l) => l.name).join(', ') || '-'}</td>
                   <td><span className={`badge ${u.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>{u.status}</span></td>
                   <td className="space-x-2">
-                    <button className="text-indigo-600 text-xs font-medium hover:underline" onClick={() => openEdit(u)}>Edit</button>
+                    <button className="text-[var(--brand-600)] text-xs font-medium hover:underline" onClick={() => openEdit(u)}>Edit</button>
                     <button className="text-xs font-medium hover:underline text-slate-600" onClick={() => toggleStatus(u)}>{u.status === 'active' ? 'Disable' : 'Enable'}</button>
                   </td>
                 </tr>
@@ -139,7 +139,7 @@ export default function Users() {
               <label className="label">Assigned Locations</label>
               <div className="flex flex-wrap gap-2">
                 {locations.map((l) => (
-                  <label key={l.id} className={`badge cursor-pointer border ${form.locationIds.includes(l.id) ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-600 border-slate-300'}`}>
+                  <label key={l.id} className={`badge cursor-pointer border ${form.locationIds.includes(l.id) ? 'bg-[var(--brand-600)] text-white border-[var(--brand-600)]' : 'bg-white text-slate-600 border-slate-300'}`}>
                     <input type="checkbox" className="hidden" checked={form.locationIds.includes(l.id)} onChange={() => toggleLocation(l.id)} />
                     {l.name}
                   </label>

@@ -6,7 +6,7 @@ import { formatMoney, formatDate } from '../../utils/format';
 import { useAuth } from '../../context/AuthContext';
 
 const STATUS_COLORS = {
-  draft: 'bg-slate-200 text-slate-700', submitted: 'bg-blue-100 text-blue-700', approved: 'bg-indigo-100 text-indigo-700',
+  draft: 'bg-slate-200 text-slate-700', submitted: 'bg-blue-100 text-blue-700', approved: 'bg-[var(--brand-100)] text-[var(--brand-700)]',
   partially_received: 'bg-amber-100 text-amber-700', fully_received: 'bg-emerald-100 text-emerald-700',
   cancelled: 'bg-red-100 text-red-700', closed: 'bg-slate-200 text-slate-700',
 };
@@ -72,8 +72,8 @@ export default function PurchaseOrders() {
                 <td><span className={`badge capitalize ${STATUS_COLORS[o.status]}`}>{o.status.replaceAll('_', ' ')}</span></td>
                 <td>{formatDate(o.createdAt)}</td>
                 <td className="space-x-2">
-                  {o.status === 'draft' && hasPermission('CREATE_PURCHASE') && <button className="text-indigo-600 text-xs hover:underline" onClick={() => setStatus(o, 'submitted')}>Submit</button>}
-                  {o.status === 'submitted' && hasPermission('APPROVE_PURCHASE') && <button className="text-indigo-600 text-xs hover:underline" onClick={() => setStatus(o, 'approved')}>Approve</button>}
+                  {o.status === 'draft' && hasPermission('CREATE_PURCHASE') && <button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => setStatus(o, 'submitted')}>Submit</button>}
+                  {o.status === 'submitted' && hasPermission('APPROVE_PURCHASE') && <button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => setStatus(o, 'approved')}>Approve</button>}
                   {['draft', 'submitted', 'approved'].includes(o.status) && <button className="text-red-500 text-xs hover:underline" onClick={() => setStatus(o, 'cancelled')}>Cancel</button>}
                 </td>
               </tr>

@@ -42,7 +42,7 @@ export default function Layout() {
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `block px-4 py-2 text-sm rounded-md mx-2 my-0.5 ${isActive ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'}`
+                `block px-4 py-2 text-sm rounded-md mx-2 my-0.5 ${isActive ? 'bg-[var(--brand-600)] text-white' : 'text-slate-300 hover:bg-slate-800'}`
               }
             >
               {item.label}

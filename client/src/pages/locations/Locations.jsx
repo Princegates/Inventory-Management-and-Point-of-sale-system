@@ -37,7 +37,7 @@ export default function Locations() {
           <div key={l.id} className="card p-4">
             <div className="flex items-center justify-between">
               <p className="font-medium text-slate-800">{l.name}</p>
-              <span className="badge bg-indigo-100 text-indigo-700 capitalize">{l.type}</span>
+              <span className="badge bg-[var(--brand-100)] text-[var(--brand-700)] capitalize">{l.type}</span>
             </div>
             <p className="text-xs text-slate-500 mt-1">Code: {l.code}</p>
             {l.address && <p className="text-xs text-slate-500">{l.address}</p>}
