@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '/api' });
+// Defaults to a same-origin relative path, which works with the Vite dev proxy and the
+// Netlify redirect config unmodified. Set VITE_API_BASE_URL at build time when the API is
+// hosted on a different origin (e.g. a cPanel Node app on its own subdomain).
+const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL || '/api' });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('ims_pos_token');

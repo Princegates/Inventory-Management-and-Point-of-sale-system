@@ -139,6 +139,67 @@ services, in this order:
 Sign in with the `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` you set in step 2 and change the
 password from the app once logged in.
 
+## Publishing (all-in-one on cPanel)
+
+Some cPanel plans (e.g. Namecheap's Stellar Plus/Business) can host all three pieces directly -
+database, API and static client - with nothing external needed. Check first: under cPanel's
+**Databases** section you need a **PostgreSQL Databases** icon (not just MySQL), and under
+**Software** you need **Setup Node.js App**. If both are there, this path works as-is.
+
+The API is put on its own subdomain (e.g. `api.yourdomain.com`) rather than a subpath of the
+main domain - this avoids the static site's SPA-fallback `.htaccess` rule and the Node app's
+own routing fighting over the same path, and is the standard pattern cPanel's Node Selector is
+built for.
+
+### 1. Database
+
+cPanel -> **Databases** -> **PostgreSQL Database Wizard**. Create a database and a user (cPanel
+prefixes both with your account username, e.g. `youruser_ims_pos` / `youruser_imsapp`), grant
+the user all privileges on the database, and note the password. The host is `localhost` and the
+port is `5432` when the app and database are on the same cPanel account (the normal case).
+
+### 2. API
+
+1. Create the subdomain first: cPanel -> **Domains** -> **Subdomains** -> add `api` (document
+   root doesn't matter, the Node app will own that URL).
+2. Upload the `server/` folder's contents to a directory *outside* `public_html`, e.g.
+   `~/ims-pos-api` (via **File Manager** or SFTP/SSH - "Manage Shell" in your screenshot means
+   you have terminal access, so `git clone` the repo there directly is easiest).
+3. cPanel -> **Software** -> **Setup Node.js App** -> **Create Application**:
+   - Node.js version: latest available LTS
+   - Application mode: Production
+   - Application root: `ims-pos-api` (the folder from step 2)
+   - Application URL: the `api` subdomain from step 1
+   - Application startup file: `src/server.js`
+4. Add environment variables in the same screen: `NODE_ENV=production`, `DB_HOST=localhost`,
+   `DB_PORT=5432`, `DB_NAME`/`DB_USER`/`DB_PASSWORD` from step 1, `JWT_SECRET` (any long random
+   string), `JWT_EXPIRES_IN=12h`, `CORS_ORIGIN=https://yourdomain.com` (your main domain, from
+   step 3 below).
+5. Click **Run NPM Install** in the same screen (or, via the shell command cPanel shows at the
+   top of the page, which activates that app's own Node/npm - regular system `npm` won't have
+   the right version). Then **Restart** the app.
+6. Seed the database once: open **Manage Shell** (or SSH in), run the activation command cPanel
+   gave you in step 5, `cd` into the app root, and run `npm run seed`. Note the admin
+   credentials it prints. Re-running it later is harmless (idempotent) if you ever need to.
+7. Visit `https://api.yourdomain.com/health` - you should get `{"status":"ok"}`.
+
+### 3. Client
+
+1. Build locally with the API's URL baked in:
+   ```bash
+   cd client
+   VITE_API_BASE_URL=https://api.yourdomain.com/api npm run build
+   ```
+2. Upload the *contents* of `client/dist/` (not the folder itself) into `public_html` (File
+   Manager or SFTP). This includes the `.htaccess` that makes client-side routes like `/products`
+   or `/pos` work on a direct link or refresh.
+3. Visit `https://yourdomain.com`, sign in, and confirm a page that hits the API (e.g.
+   Dashboard) loads data.
+
+If `mod_rewrite` isn't enabled on your account the SPA fallback in `.htaccess` won't work and
+direct links to non-root routes will 404 - Namecheap shared hosting has it on by default, but if
+you hit this, cPanel support can confirm/enable it.
+
 ## Roles seeded by default
 
 Super Administrator, Inventory Manager, Warehouse Officer, Shop Manager, Cashier, Accountant,

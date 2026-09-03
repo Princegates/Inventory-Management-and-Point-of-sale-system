@@ -1,0 +1,10 @@
+# Single-page app fallback for Apache/cPanel static hosting: any request that isn't an existing
+# file or directory (e.g. /products, /pos) is served index.html so React Router can handle it
+# client-side, instead of Apache returning a 404.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
