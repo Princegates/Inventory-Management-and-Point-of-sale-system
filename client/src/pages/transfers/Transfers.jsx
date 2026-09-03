@@ -16,6 +16,7 @@ export default function Transfers() {
   const [locations, setLocations] = useState([]);
   const [products, setProducts] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [viewing, setViewing] = useState(null); // the transfer whose item history is open in the detail modal
   const [error, setError] = useState('');
   const [form, setForm] = useState({ sourceLocationId: '', destinationLocationId: '', notes: '', items: [] });
   const [sourceBalances, setSourceBalances] = useState({}); // productId (string) -> quantity available at the chosen source
@@ -71,16 +72,18 @@ export default function Transfers() {
 
       <div className="card overflow-x-auto">
         <table className="table-base">
-          <thead><tr><th>Transfer #</th><th>From</th><th>To</th><th>Status</th><th>Created</th><th></th></tr></thead>
+          <thead><tr><th>Transfer #</th><th>From</th><th>To</th><th>Items</th><th>Status</th><th>Created</th><th></th></tr></thead>
           <tbody className="divide-y divide-slate-100">
             {transfers.map((t) => (
               <tr key={t.id}>
                 <td className="font-medium text-slate-800">{t.transfer_number}</td>
                 <td>{t.sourceLocation?.name}</td>
                 <td>{t.destinationLocation?.name}</td>
+                <td>{(t.items || []).reduce((sum, i) => sum + i.quantity, 0)} units &middot; {(t.items || []).length} product{t.items?.length === 1 ? '' : 's'}</td>
                 <td><span className={`badge capitalize ${STATUS_COLORS[t.status]}`}>{t.status.replaceAll('_', ' ')}</span></td>
                 <td>{formatDateTime(t.createdAt)}</td>
-                <td className="space-x-2">
+                <td className="space-x-2 whitespace-nowrap">
+                  <button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => setViewing(t)}>View</button>
                   {t.status === 'requested' && hasPermission('APPROVE_TRANSFER') && <button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => action(t, 'approve')}>Approve</button>}
                   {t.status === 'approved' && hasPermission('ISSUE_TRANSFER') && <button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => action(t, 'issue')}>Issue</button>}
                   {t.status === 'in_transit' && hasPermission('RECEIVE_TRANSFER') && <button className="text-[var(--brand-600)] text-xs hover:underline" onClick={() => action(t, 'receive')}>Receive</button>}
@@ -88,7 +91,7 @@ export default function Transfers() {
                 </td>
               </tr>
             ))}
-            {transfers.length === 0 && <tr><td colSpan={6} className="text-center text-slate-400 py-6">No transfers yet</td></tr>}
+            {transfers.length === 0 && <tr><td colSpan={7} className="text-center text-slate-400 py-6">No transfers yet</td></tr>}
           </tbody>
         </table>
       </div>
@@ -157,6 +160,51 @@ export default function Transfers() {
             <button className="btn-primary" disabled={!form.items.length || (!!form.sourceLocationId && form.items.some((it) => it.productId && Number(it.quantity) > (sourceBalances[it.productId] ?? 0)))}>Request Transfer</button>
           </div>
         </form>
+      </Modal>
+
+      <Modal open={!!viewing} title={viewing ? `Transfer ${viewing.transfer_number}` : ''} onClose={() => setViewing(null)} width="max-w-xl">
+        {viewing && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-slate-600">{viewing.sourceLocation?.name} &rarr; {viewing.destinationLocation?.name}</p>
+              <span className={`badge capitalize ${STATUS_COLORS[viewing.status]}`}>{viewing.status.replaceAll('_', ' ')}</span>
+            </div>
+
+            <div>
+              <p className="label mb-1">Items Transferred</p>
+              <table className="table-base">
+                <thead><tr><th>Product</th><th>SKU</th><th>Quantity</th></tr></thead>
+                <tbody className="divide-y divide-slate-100">
+                  {(viewing.items || []).map((i) => (
+                    <tr key={i.id}>
+                      <td>{i.product?.name}</td>
+                      <td className="text-slate-500">{i.product?.sku}</td>
+                      <td>{i.quantity}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div>
+              <p className="label mb-1">History</p>
+              <ul className="text-sm text-slate-600 space-y-1">
+                <li>Requested by {viewing.requester?.name || 'unknown'} on {formatDateTime(viewing.createdAt)}</li>
+                {viewing.approver && <li>Approved by {viewing.approver.name}</li>}
+                {viewing.issuer && <li>Issued by {viewing.issuer.name}{viewing.issued_at ? ` on ${formatDateTime(viewing.issued_at)}` : ''}</li>}
+                {viewing.receiver && <li>Received by {viewing.receiver.name}{viewing.received_at ? ` on ${formatDateTime(viewing.received_at)}` : ''}</li>}
+                {viewing.status === 'cancelled' && <li className="text-red-600">Cancelled</li>}
+              </ul>
+            </div>
+
+            {viewing.notes && (
+              <div>
+                <p className="label mb-1">Notes</p>
+                <p className="text-sm text-slate-600 whitespace-pre-wrap">{viewing.notes}</p>
+              </div>
+            )}
+          </div>
+        )}
       </Modal>
     </div>
   );
