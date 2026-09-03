@@ -33,6 +33,8 @@ export default function Users() {
 
   const openCreate = () => { setEditing(null); setForm(empty); setModalOpen(true); };
   const openEdit = (u) => {
+    // Backend enforces this too - avoids opening a form that would only 403 on save.
+    if (u.role?.name === 'Super Administrator' && !isSuperAdmin) return;
     setEditing(u);
     setForm({ name: u.name, email: u.email, password: '', roleId: u.role?.id || '', locationIds: u.locations.map((l) => l.id), hasGlobalLocationAccess: u.hasGlobalLocationAccess });
     setModalOpen(true);
@@ -56,6 +58,7 @@ export default function Users() {
   };
 
   const toggleStatus = async (u) => {
+    if (u.role?.name === 'Super Administrator' && !isSuperAdmin) return;
     await api.post(`/users/${u.id}/${u.status === 'active' ? 'disable' : 'enable'}`);
     loadAll();
   };
@@ -114,19 +117,28 @@ export default function Users() {
           <table className="table-base">
             <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Locations</th><th>Status</th><th></th></tr></thead>
             <tbody className="divide-y divide-slate-100">
-              {users.map((u) => (
-                <tr key={u.id}>
-                  <td className="font-medium text-slate-800">{u.name}</td>
-                  <td>{u.email}</td>
-                  <td>{u.role?.name}</td>
-                  <td>{u.hasGlobalLocationAccess ? 'All locations' : u.locations.map((l) => l.name).join(', ') || '-'}</td>
-                  <td><span className={`badge ${u.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>{u.status}</span></td>
-                  <td className="space-x-2">
-                    <button className="text-[var(--brand-600)] text-xs font-medium hover:underline" onClick={() => openEdit(u)}>Edit</button>
-                    <button className="text-xs font-medium hover:underline text-slate-600" onClick={() => toggleStatus(u)}>{u.status === 'active' ? 'Disable' : 'Enable'}</button>
-                  </td>
-                </tr>
-              ))}
+              {users.map((u) => {
+                const locked = u.role?.name === 'Super Administrator' && !isSuperAdmin;
+                return (
+                  <tr key={u.id}>
+                    <td className="font-medium text-slate-800">{u.name}</td>
+                    <td>{u.email}</td>
+                    <td>{u.role?.name}</td>
+                    <td>{u.hasGlobalLocationAccess ? 'All locations' : u.locations.map((l) => l.name).join(', ') || '-'}</td>
+                    <td><span className={`badge ${u.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>{u.status}</span></td>
+                    <td className="space-x-2">
+                      {locked ? (
+                        <span className="text-xs text-slate-400">Only a Super Administrator can manage this account</span>
+                      ) : (
+                        <>
+                          <button className="text-[var(--brand-600)] text-xs font-medium hover:underline" onClick={() => openEdit(u)}>Edit</button>
+                          <button className="text-xs font-medium hover:underline text-slate-600" onClick={() => toggleStatus(u)}>{u.status === 'active' ? 'Disable' : 'Enable'}</button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -170,7 +182,7 @@ export default function Users() {
             <label className="label">Role</label>
             <select required className="input" value={form.roleId} onChange={(e) => setForm({ ...form, roleId: e.target.value })}>
               <option value="">Select role</option>
-              {roles.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+              {roles.filter((r) => r.name !== 'Super Administrator' || isSuperAdmin).map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
           </div>
           <label className="flex items-center gap-1.5 text-sm text-slate-600">

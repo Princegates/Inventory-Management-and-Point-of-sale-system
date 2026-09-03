@@ -21,9 +21,21 @@ const get = catchAsync(async (req, res) => {
   res.json({ user: serializeUser(user) });
 });
 
+// Only a Super Administrator may hand out (or keep in place) the Super Administrator role -
+// otherwise anyone with MANAGE_USERS, a much more commonly granted permission, could promote
+// themselves or anyone else straight past the role-editing restriction added separately.
+async function assertCanAssignRole(req, roleId) {
+  if (roleId === undefined || roleId === null) return;
+  const role = await db.Role.findByPk(roleId);
+  if (role?.name === 'Super Administrator' && req.user.role?.name !== 'Super Administrator') {
+    throw new ApiError(403, 'Only a Super Administrator can assign the Super Administrator role');
+  }
+}
+
 const create = catchAsync(async (req, res) => {
   const { name, email, password, roleId, locationIds = [], hasGlobalLocationAccess = false } = req.body;
   if (!name || !email || !password || !roleId) throw new ApiError(400, 'name, email, password and roleId are required');
+  await assertCanAssignRole(req, roleId);
 
   const existing = await db.User.findOne({ where: { email: email.toLowerCase() } });
   if (existing) throw new ApiError(409, 'A user with this email already exists');
@@ -42,8 +54,15 @@ const create = catchAsync(async (req, res) => {
 });
 
 const update = catchAsync(async (req, res) => {
-  const user = await db.User.scope('withPassword').findByPk(req.params.id);
+  const user = await db.User.scope('withPassword').findByPk(req.params.id, { include: [{ model: db.Role, as: 'role' }] });
   if (!user) throw new ApiError(404, 'User not found');
+  // Editing an existing Super Administrator's account at all - not just their role - is
+  // likewise restricted to another Super Administrator, so a disable/enable, location change or
+  // password reset can't be used to sideline the account instead of reassigning its role.
+  if (user.role?.name === 'Super Administrator' && req.user.role?.name !== 'Super Administrator') {
+    throw new ApiError(403, 'Only a Super Administrator can modify a Super Administrator account');
+  }
+  await assertCanAssignRole(req, req.body.roleId);
 
   const before = { name: user.name, email: user.email, role_id: user.role_id, status: user.status };
   const { name, email, roleId, locationIds, hasGlobalLocationAccess, status, password } = req.body;
@@ -66,8 +85,11 @@ const update = catchAsync(async (req, res) => {
 
 // Disable rather than delete - completed records/audit trail must remain attributable to the user.
 const disable = catchAsync(async (req, res) => {
-  const user = await db.User.findByPk(req.params.id);
+  const user = await db.User.findByPk(req.params.id, { include: [{ model: db.Role, as: 'role' }] });
   if (!user) throw new ApiError(404, 'User not found');
+  if (user.role?.name === 'Super Administrator' && req.user.role?.name !== 'Super Administrator') {
+    throw new ApiError(403, 'Only a Super Administrator can disable a Super Administrator account');
+  }
   user.status = 'disabled';
   await user.save();
   await logAudit({ userId: req.user.id, action: 'DISABLE_USER', entityType: 'user', entityId: user.id });
