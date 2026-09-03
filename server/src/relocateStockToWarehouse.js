@@ -33,7 +33,7 @@ async function run() {
 
   if (items.length === 0) {
     console.log('Nothing to move - no stock currently at Shop 1.'); // eslint-disable-line no-console
-    process.exit(0);
+    return { transferNumber: null, productCount: 0, totalUnits: 0, message: 'Nothing to move - no stock currently at Shop 1.' };
   }
 
   const totalUnits = items.reduce((s, row) => s + row.quantity, 0);
@@ -88,10 +88,19 @@ async function run() {
   console.log(`Transfer ${result.transfer_number} completed: ${items.length} product(s), ${totalUnits} total units.`); // eslint-disable-line no-console
   console.log(`Moved from ${shop.name} -> ${warehouse.name}.`); // eslint-disable-line no-console
   console.log('View it under Stock Transfers in the app.'); // eslint-disable-line no-console
-  process.exit(0);
+  return { transferNumber: result.transfer_number, productCount: items.length, totalUnits };
 }
 
-run().catch((err) => {
-  console.error('Relocation failed:', err); // eslint-disable-line no-console
-  process.exit(1);
-});
+module.exports = run;
+
+// Only run immediately (and exit the process) when invoked directly as `node
+// src/relocateStockToWarehouse.js` - app.js also imports this to expose it over HTTP for hosts
+// with no shell access, and process.exit() there would kill the whole running server.
+if (require.main === module) {
+  run()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error('Relocation failed:', err); // eslint-disable-line no-console
+      process.exit(1);
+    });
+}

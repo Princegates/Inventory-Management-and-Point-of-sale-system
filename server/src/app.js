@@ -43,6 +43,21 @@ if (process.env.SEED_KEY) {
       next(err);
     }
   });
+
+  // Same idea again, for the one-off relocation of opening stock from Shop 1 to Main Warehouse
+  // (a real completed Stock Transfer, not a silent balance rewrite - see
+  // relocateStockToWarehouse.js). Safe to trigger more than once: once stock is at the
+  // warehouse, a second run finds nothing left at the shop and does nothing.
+  app.get('/api/run-relocate-to-warehouse', async (req, res, next) => {
+    if (req.query.key !== process.env.SEED_KEY) return res.status(404).json({ error: 'Not found' });
+    try {
+      const relocate = require('./relocateStockToWarehouse');
+      const result = await relocate();
+      res.json({ success: true, ...result });
+    } catch (err) {
+      next(err);
+    }
+  });
 }
 
 app.use('/api', routes);
