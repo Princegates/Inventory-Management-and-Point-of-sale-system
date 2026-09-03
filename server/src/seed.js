@@ -65,10 +65,19 @@ async function seed() {
 
   console.log('---'); // eslint-disable-line no-console
   console.log(`Seed complete. Admin login: ${adminEmail} / ${created ? adminPassword : '(existing password preserved)'}`); // eslint-disable-line no-console
-  process.exit(0);
+  return { adminEmail, adminPasswordSet: created };
 }
 
-seed().catch((err) => {
-  console.error('Seed failed:', err); // eslint-disable-line no-console
-  process.exit(1);
-});
+module.exports = seed;
+
+// Only run immediately (and exit the process) when invoked directly as `node src/seed.js` -
+// app.js also imports this module to expose it over HTTP for hosts with no shell access, and
+// process.exit() there would kill the whole running server.
+if (require.main === module) {
+  seed()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error('Seed failed:', err); // eslint-disable-line no-console
+      process.exit(1);
+    });
+}
