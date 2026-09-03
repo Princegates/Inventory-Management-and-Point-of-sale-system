@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -26,6 +27,7 @@ import POS from './pages/pos/POS';
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
@@ -36,7 +38,7 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/pos" element={<ProtectedRoute permission="CREATE_SALE"><POS /></ProtectedRoute>} />
         <Route path="/sales" element={<ProtectedRoute permission={['CREATE_SALE', 'VIEW_REPORTS']}><Sales /></ProtectedRoute>} />
         <Route path="/products" element={<ProtectedRoute permission="VIEW_PRODUCTS"><Products /></ProtectedRoute>} />

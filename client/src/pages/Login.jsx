@@ -18,7 +18,7 @@ export default function Login() {
     setLoading(true);
     try {
       await login(email, password);
-      navigate(location.state?.from?.pathname || '/', { replace: true });
+      navigate(location.state?.from?.pathname || '/dashboard', { replace: true });
     } catch (err) {
       setError(apiErrorMessage(err));
     } finally {

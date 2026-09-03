@@ -2,7 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const NAV = [
-  { to: '/', label: 'Dashboard', end: true },
+  { to: '/dashboard', label: 'Dashboard', end: true },
   { to: '/pos', label: 'Point of Sale', permission: 'CREATE_SALE' },
   { to: '/sales', label: 'Sales', permission: ['CREATE_SALE', 'VIEW_REPORTS'] },
   { to: '/products', label: 'Products', permission: 'VIEW_PRODUCTS' },
