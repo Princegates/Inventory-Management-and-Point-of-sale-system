@@ -14,6 +14,15 @@ server/   Node.js + Express + Sequelize   -> REST API
           PostgreSQL                      -> relational database
 ```
 
+## Documentation
+
+- **[docs/IMS-POS-User-Manual.docx](docs/IMS-POS-User-Manual.docx)** - for staff (cashiers, shop
+  managers, inventory staff, accountants, administrators): how to use every screen, day-to-day
+  workflow checklists, and a troubleshooting FAQ.
+- **[docs/IMS-POS-Technical-Reference.docx](docs/IMS-POS-Technical-Reference.docx)** - for
+  developers: architecture, the inventory engine's internals, database schema, full API
+  reference, and how the SRS's business rules map to the code.
+
 The POS is not a separate application - it is one interface into the same API, models and
 inventory engine used by the warehouse and reporting modules (see `server/src/services/inventoryEngine.js`).
 
