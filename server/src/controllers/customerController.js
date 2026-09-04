@@ -2,6 +2,8 @@ const db = require('../models');
 const { Op } = require('sequelize');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
+const emailService = require('../services/emailService');
+const { logAudit } = require('../services/auditLogger');
 
 const list = catchAsync(async (req, res) => {
   const where = {};
@@ -42,4 +44,21 @@ const update = catchAsync(async (req, res) => {
   res.json({ customer });
 });
 
-module.exports = { list, get, create, update };
+// Ad-hoc email sent directly to a customer from the Customers page (e.g. a promotion,
+// an order update, or any other message that isn't an automatic transactional email).
+const sendEmail = catchAsync(async (req, res) => {
+  const { subject, message } = req.body;
+  if (!subject || !message) throw new ApiError(400, 'subject and message are required');
+
+  const customer = await db.Customer.findByPk(req.params.id);
+  if (!customer) throw new ApiError(404, 'Customer not found');
+  if (!customer.email) throw new ApiError(400, 'This customer does not have an email address on file');
+
+  const result = await emailService.sendCustomerEmail({ to: customer.email, subject, message, senderName: req.user.name });
+
+  await logAudit({ userId: req.user.id, action: 'EMAIL_CUSTOMER', entityType: 'customer', entityId: customer.id, newValue: { subject } });
+
+  res.json({ success: true, emailSent: result.sent });
+});
+
+module.exports = { list, get, create, update, sendEmail };

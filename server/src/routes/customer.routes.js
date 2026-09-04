@@ -7,5 +7,6 @@ router.get('/', controller.list);
 router.get('/:id', controller.get);
 router.post('/', requirePermission(PERMISSIONS.MANAGE_CUSTOMERS, PERMISSIONS.CREATE_SALE), controller.create);
 router.put('/:id', requirePermission(PERMISSIONS.MANAGE_CUSTOMERS), controller.update);
+router.post('/:id/send-email', requirePermission(PERMISSIONS.MANAGE_CUSTOMERS), controller.sendEmail);
 
 module.exports = router;

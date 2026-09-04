@@ -3,6 +3,7 @@ const db = require('../models');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { logAudit } = require('../services/auditLogger');
+const emailService = require('../services/emailService');
 const { serializeUser } = require('./authController');
 
 const include = [
@@ -50,6 +51,11 @@ const create = catchAsync(async (req, res) => {
   await logAudit({ userId: req.user.id, action: 'CREATE_USER', entityType: 'user', entityId: user.id, newValue: { name, email, roleId } });
 
   const created = await db.User.findByPk(user.id, { include });
+
+  // Fire-and-forget: a slow/failed email must never block or fail account creation itself.
+  emailService.sendWelcomeEmail(created, password)
+    .catch((err) => console.error(`[email] welcome email to ${created.email} failed:`, err.message)); // eslint-disable-line no-console
+
   res.status(201).json({ user: serializeUser(created) });
 });
 

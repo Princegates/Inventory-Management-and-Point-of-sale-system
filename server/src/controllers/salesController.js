@@ -6,6 +6,7 @@ const catchAsync = require('../utils/catchAsync');
 const { GENERATORS } = require('../services/numberGenerator');
 const { logAudit } = require('../services/auditLogger');
 const { notify, checkStockThresholds } = require('../services/notifier');
+const emailService = require('../services/emailService');
 const inventoryEngine = require('../services/inventoryEngine');
 const { assertLocationAccess } = require('../middleware/locationAccess');
 
@@ -169,6 +170,13 @@ const create = catchAsync(async (req, res) => {
   });
 
   const created = await db.Sale.findByPk(result.id, { include });
+
+  // Fire-and-forget: emailing the receipt must never slow down or fail the checkout itself.
+  if (created.customer?.email) {
+    emailService.sendReceiptEmail(created)
+      .catch((err) => console.error(`[email] receipt email for sale ${created.sale_number} failed:`, err.message)); // eslint-disable-line no-console
+  }
+
   res.status(201).json({ sale: created });
 });
 
